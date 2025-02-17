@@ -81,3 +81,10 @@ with tab3:
                 st.write(f"⚠️ Hausverbot: {'Ja' if record.get('ban_status') == 'Yes' else 'Nein'}")
     else:
         st.write("Noch keine Datensätze vorhanden.")
+
+    # Button to clear all records
+    if st.button("Alle Sanktionen und Hausverbote löschen"):
+        sanctions_db.clear()  # Clear the sanctions_db dictionary
+        save_data(sanctions_db)  # Save the cleared data to the file
+        st.success("Alle Sanktionen und Hausverbote wurden gelöscht.")
+
