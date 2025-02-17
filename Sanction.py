@@ -33,7 +33,13 @@ with tab1:
     if st.button("Check"):
         if name in sanctions_db:
             latest_status = sanctions_db[name][-1]["ban_status"]
+            latest_date = sanctions_db[name][-1]["date_of_suspension"]
+            return_date = sanctions_db[name][-1].get("date_of_return", "N/A")
+            reason = sanctions_db[name][-1]["ban_reason"]
             st.write(f"🚨 **{name} is {'BANNED' if latest_status == 'Yes' else 'NOT BANNED'}**")
+            st.write(f"📅 Date of Suspension: {latest_date}")
+            st.write(f"📅 Date of Return: {return_date}")
+            st.write(f"🔴 Ban Reason: {reason}")
         else:
             st.write(f"✅ **{name} is not in the system**")
 
@@ -43,7 +49,9 @@ with tab2:
     new_name = st.text_input("Name:")
     new_sanction = st.text_area("Sanction Details:")
     new_ban_status = st.selectbox("Ban Status:", ["No", "Yes"])
-    new_date = str(datetime.date.today())
+    new_date_of_suspension = str(datetime.date.today())
+    new_date_of_return = st.date_input("Date of Return:")
+    new_ban_reason = st.text_area("Ban Reason (Action for ban):")
 
     if st.button("Save Sanction"):
         if new_name:
@@ -51,8 +59,10 @@ with tab2:
                 sanctions_db[new_name] = []
             sanctions_db[new_name].append({
                 "sanction": new_sanction,
-                "date": new_date,
-                "ban_status": new_ban_status
+                "date_of_suspension": new_date_of_suspension,
+                "date_of_return": str(new_date_of_return),
+                "ban_status": new_ban_status,
+                "ban_reason": new_ban_reason
             })
             save_data(sanctions_db)  # Save to JSON
             st.success(f"Sanction for {new_name} added!")
@@ -64,6 +74,11 @@ with tab3:
         for person, records in sanctions_db.items():
             st.write(f"**{person}**")
             for record in records:
-                st.write(f"- 📅 {record['date']}: {record['sanction']} (Ban: {record['ban_status']})")
+                st.write(f"- 📅 Date of Suspension: {record['date_of_suspension']}")
+                st.write(f"📅 Date of Return: {record['date_of_return']}")
+                st.write(f"🔴 Sanction: {record['sanction']}")
+                st.write(f"🔴 Ban Reason: {record['ban_reason']}")
+                st.write(f"⚠️ Ban Status: {'BANNED' if record['ban_status'] == 'Yes' else 'NOT BANNED'}")
     else:
         st.write("No records yet.")
+
