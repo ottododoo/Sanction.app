@@ -24,13 +24,30 @@ sanctions_db = load_data()
 # Streamlit App
 st.title("FACKtory Register: Hausverbot & Sanktionen 🚫")
 
-# Sidebar for navigation
-with st.sidebar:
-    st.header("Navigationsmenü")
-    tab = st.radio("Wählen Sie eine Aktion:", ["➕ Neue Sanktion", "📜 Alle Sanktionen und Hausverbote"])
+# Create the sidebar with a vertical layout
+sidebar = st.sidebar
+sidebar.title("Menü")
+menu_option = sidebar.radio("Wählen Sie eine Option", ["🔍 Prüfe Hausverbot", "➕ Neue Sanktion", "📜 Alle Sanktionen und Hausverbote"])
 
-# Main content area based on the selected tab
-if tab == "➕ Neue Sanktion":
+# 🔍 Prüfe Hausverbot (if option selected in sidebar)
+if menu_option == "🔍 Prüfe Hausverbot":
+    st.subheader("Prüfe, ob jemand Hausverbot hat")
+    name = st.text_input("Name der Person:", key="check_name")
+    if st.button("Prüfen", key="check_button"):
+        if name in sanctions_db:
+            latest_status = sanctions_db[name][-1].get("ban_status", "N/A")
+            latest_date = sanctions_db[name][-1].get("date_of_suspension", "N/A")
+            return_date = sanctions_db[name][-1].get("date_of_return", "N/A")
+            reason = sanctions_db[name][-1].get("ban_reason", "N/A")
+            st.write(f"🚨 **{name} hat {'Hausverbot' if latest_status == 'Yes' else 'kein Hausverbot'}**")
+            st.write(f"📅 Datum des Hausverbots: {latest_date}")
+            st.write(f"📅 Rückkehrdatum: {return_date}")
+            st.write(f"🔴 Grund für das Hausverbot: {reason}")
+        else:
+            st.write(f"✅ **{name} ist nicht im System**")
+
+# ➕ Neue Sanktion (if option selected in sidebar)
+elif menu_option == "➕ Neue Sanktion":
     st.subheader("Neue Sanktion oder Hausverbot hinzufügen")
     new_name = st.text_input("Name der Person:", key="add_name")
     new_sanction = st.text_area("Details der Sanktion:", key="add_sanction")
@@ -53,7 +70,8 @@ if tab == "➕ Neue Sanktion":
             save_data(sanctions_db)  # Save to JSON
             st.success(f"Sanktion für {new_name} hinzugefügt!")
 
-elif tab == "📜 Alle Sanktionen und Hausverbote":
+# 📜 Alle Sanktionen und Hausverbote (if option selected in sidebar)
+elif menu_option == "📜 Alle Sanktionen und Hausverbote":
     st.subheader("Alle Sanktionen & Hausverbote")
     if sanctions_db:
         for person, records in sanctions_db.items():
@@ -72,6 +90,3 @@ elif tab == "📜 Alle Sanktionen und Hausverbote":
         sanctions_db.clear()  # Clear the sanctions_db dictionary
         save_data(sanctions_db)  # Save the cleared data to the file
         st.success("Alle Sanktionen und Hausverbote wurden gelöscht.")
-
-
-
