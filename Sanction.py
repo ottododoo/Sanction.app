@@ -29,8 +29,8 @@ tab1, tab2, tab3 = st.tabs(["🔍 Prüfe Hausverbot", "➕ Neue Sanktion", "📜
 # 🔍 Check if someone has a ban
 with tab1:
     st.subheader("Prüfe, ob jemand Hausverbot hat")
-    name = st.text_input("Name der Person:")
-    if st.button("Prüfen"):
+    name = st.text_input("Name der Person:", key="check_name")
+    if st.button("Prüfen", key="check_button"):
         if name in sanctions_db:
             latest_status = sanctions_db[name][-1].get("ban_status", "N/A")
             latest_date = sanctions_db[name][-1].get("date_of_suspension", "N/A")
@@ -46,14 +46,14 @@ with tab1:
 # ➕ Add new sanction
 with tab2:
     st.subheader("Neue Sanktion oder Hausverbot hinzufügen")
-    new_name = st.text_input("Name der Person:")
-    new_sanction = st.text_area("Details der Sanktion:")
-    new_ban_status = st.selectbox("Hausverbot:", ["Nein", "Ja"])
+    new_name = st.text_input("Name der Person:", key="add_name")
+    new_sanction = st.text_area("Details der Sanktion:", key="add_sanction")
+    new_ban_status = st.selectbox("Hausverbot:", ["Nein", "Ja"], key="add_ban_status")
     new_date_of_suspension = str(datetime.date.today())
-    new_date_of_return = st.date_input("Datum der Rückkehr:")
-    new_ban_reason = st.text_area("Grund für das Hausverbot:")
+    new_date_of_return = st.date_input("Datum der Rückkehr:", key="add_return_date")
+    new_ban_reason = st.text_area("Grund für das Hausverbot:", key="add_ban_reason")
 
-    if st.button("Sanktion speichern"):
+    if st.button("Sanktion speichern", key="save_sanction"):
         if new_name:
             if new_name not in sanctions_db:
                 sanctions_db[new_name] = []
@@ -81,5 +81,3 @@ with tab3:
                 st.write(f"⚠️ Hausverbot: {'Ja' if record.get('ban_status') == 'Yes' else 'Nein'}")
     else:
         st.write("Noch keine Datensätze vorhanden.")
-
-
