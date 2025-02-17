@@ -32,10 +32,10 @@ with tab1:
     name = st.text_input("Enter name:")
     if st.button("Check"):
         if name in sanctions_db:
-            latest_status = sanctions_db[name][-1]["ban_status"]
-            latest_date = sanctions_db[name][-1]["date_of_suspension"]
+            latest_status = sanctions_db[name][-1].get("ban_status", "N/A")
+            latest_date = sanctions_db[name][-1].get("date_of_suspension", "N/A")
             return_date = sanctions_db[name][-1].get("date_of_return", "N/A")
-            reason = sanctions_db[name][-1]["ban_reason"]
+            reason = sanctions_db[name][-1].get("ban_reason", "N/A")
             st.write(f"🚨 **{name} is {'BANNED' if latest_status == 'Yes' else 'NOT BANNED'}**")
             st.write(f"📅 Date of Suspension: {latest_date}")
             st.write(f"📅 Date of Return: {return_date}")
@@ -74,10 +74,11 @@ with tab3:
         for person, records in sanctions_db.items():
             st.write(f"**{person}**")
             for record in records:
-                st.write(f"- 📅 Date of Suspension: {record['date_of_suspension']}")
-                st.write(f"📅 Date of Return: {record['date_of_return']}")
-                st.write(f"🔴 Sanction: {record['sanction']}")
-                st.write(f"🔴 Ban Reason: {record['ban_reason']}")
-                st.write(f"⚠️ Ban Status: {'BANNED' if record['ban_status'] == 'Yes' else 'NOT BANNED'}")
+                st.write(f"- 📅 Date of Suspension: {record.get('date_of_suspension', 'N/A')}")
+                st.write(f"📅 Date of Return: {record.get('date_of_return', 'N/A')}")
+                st.write(f"🔴 Sanction: {record.get('sanction', 'N/A')}")
+                st.write(f"🔴 Ban Reason: {record.get('ban_reason', 'N/A')}")
+                st.write(f"⚠️ Ban Status: {'BANNED' if record.get('ban_status') == 'Yes' else 'NOT BANNED'}")
     else:
         st.write("No records yet.")
+
