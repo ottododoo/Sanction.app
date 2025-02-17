@@ -1,19 +1,35 @@
 import streamlit as st
+import json
+import os
 import datetime
 
-# Temporary data storage (resets when app restarts)
-sanctions_db = {}
+# File to store data
+FILE_PATH = "sanctions_data.json"
 
-# App title
+# Load existing data
+def load_data():
+    if os.path.exists(FILE_PATH):
+        with open(FILE_PATH, "r") as f:
+            return json.load(f)
+    return {}
+
+# Save data to JSON file
+def save_data(data):
+    with open(FILE_PATH, "w") as f:
+        json.dump(data, f, indent=4)
+
+# Initialize data
+sanctions_db = load_data()
+
+# Streamlit App
 st.title("FACKtory Sanctions & Ban Register 🚫")
 
-# Tabs for different actions
 tab1, tab2, tab3 = st.tabs(["🔍 Check Status", "➕ Add Sanction", "📜 View All Records"])
 
 # 🔍 Check if someone is banned
 with tab1:
     st.subheader("Check if Someone is Banned")
-    name = st.text_input("Enter name:", "")
+    name = st.text_input("Enter name:")
     if st.button("Check"):
         if name in sanctions_db:
             latest_status = sanctions_db[name][-1]["ban_status"]
@@ -27,7 +43,7 @@ with tab2:
     new_name = st.text_input("Name:")
     new_sanction = st.text_area("Sanction Details:")
     new_ban_status = st.selectbox("Ban Status:", ["No", "Yes"])
-    new_date = datetime.date.today()
+    new_date = str(datetime.date.today())
 
     if st.button("Save Sanction"):
         if new_name:
@@ -38,6 +54,7 @@ with tab2:
                 "date": new_date,
                 "ban_status": new_ban_status
             })
+            save_data(sanctions_db)  # Save to JSON
             st.success(f"Sanction for {new_name} added!")
 
 # 📜 View all records
